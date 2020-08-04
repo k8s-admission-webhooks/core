@@ -40,6 +40,11 @@ func ReadAdmissionReview(request *http.Request) (*admissionApi.AdmissionReview, 
 		return nil, fmt.Errorf("Invalid content-type. Received: %v, Expected: %v", jsonMIME, contentType)
 	}
 
+	if log.V(8) {
+		bodyString := string(body)
+		log.Infof("Request body: %v", bodyString)
+	}
+
 	ar := admissionApi.AdmissionReview{}
 	_, _, err := deserializer.Decode(body, nil, &ar)
 
@@ -71,14 +76,12 @@ func WriteAdmissionResponse(
 
 	resp, err := json.Marshal(responseAR)
 	if err != nil {
-		errDesc := fmt.Sprintf("Can't encode the response as JSON: %v", err)
-		log.Error(errDesc)
-		http.Error(writer, errDesc, http.StatusInternalServerError)
+		log.Errorf("Can't encode the response as JSON: %v", err)
+		http.Error(writer, "Failed to encode response", http.StatusInternalServerError)
 	} else if _, err := writer.Write(resp); err != nil {
-		errDesc := fmt.Sprintf("Failed to write response: %v", err)
-		log.Error(errDesc)
-		http.Error(writer, errDesc, http.StatusInternalServerError)
-	} else {
-		log.Infof("Response successfully sent to the client: %v", resp)
+		log.Errorf("Failed to write response: %v", err)
+		http.Error(writer, "Failed to send response", http.StatusInternalServerError)
+	} else if log.V(10) {
+		log.Infof("Sent response: %v", string(resp))
 	}
 }
