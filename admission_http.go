@@ -18,12 +18,14 @@ import (
 const jsonMIME = "application/json"
 
 var (
-	runtimeScheme = runtime.NewScheme()
-	codecs        = serializer.NewCodecFactory(runtimeScheme)
-	deserializer  = codecs.UniversalDeserializer()
+	appliedSchemes []string
+	// Scheme Default runtime scheme
+	Scheme       = runtime.NewScheme()
+	codecs       = serializer.NewCodecFactory(Scheme)
+	deserializer = codecs.UniversalDeserializer()
 
 	// (https://github.com/kubernetes/kubernetes/issues/57982)
-	defaulter = runtime.ObjectDefaulter(runtimeScheme)
+	defaulter = runtime.ObjectDefaulter(Scheme)
 )
 
 // ReadAdmissionReview read an AdmissionReview from a request
@@ -90,8 +92,21 @@ func WriteAdmissionResponse(
 	}
 }
 
+// InitializeRuntimeScheme initialize a runtime scheme
+// this is useful for adding schemes from different APIs(like openshift)
+func InitializeRuntimeScheme(partName string, updater func(*runtime.Scheme) error) error {
+	if !Contains(appliedSchemes, partName) {
+		err := updater(Scheme)
+		if err != nil {
+			return err
+		}
+		appliedSchemes = append(appliedSchemes, partName)
+	}
+	return nil
+}
+
 func init() {
-	_ = admissionApi.AddToScheme(runtimeScheme)
-	_ = admissionRegistration.AddToScheme(runtimeScheme)
-	_ = k8sCore.AddToScheme(runtimeScheme)
+	_ = InitializeRuntimeScheme("k8s.io/api/core/v1", k8sCore.AddToScheme)
+	_ = InitializeRuntimeScheme("k8s.io/api/admission/v1", admissionApi.AddToScheme)
+	_ = InitializeRuntimeScheme("k8s.io/api/admissionregistration/v1", admissionRegistration.AddToScheme)
 }
