@@ -1,6 +1,9 @@
 package core
 
 import (
+	"encoding/json"
+
+	admissionApi "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -20,6 +23,11 @@ const (
 )
 
 var (
+	jsonPatch = admissionApi.PatchTypeJSONPatch
+	okResponse = admissionApi.AdmissionResponse {
+		Allowed: true
+	}
+
 	// IgnoredNamespaces list of namespaces that should ignored by admission review process
 	IgnoredNamespaces = []string{
 		metav1.NamespaceSystem,
@@ -92,4 +100,23 @@ func UpdateAnnotations(current map[string]string, added map[string]string) []Pat
 // UpdateLabels create a set of packes to update labels of an object
 func UpdateLabels(current map[string]string, added map[string]string) []PatchOperation {
 	return updateItems(current, added, "/metadata/labels")
+}
+
+// CreatePatchResponse create a patch response for an admission review request
+func CreatePatchResponse(patches []PatchOperation) (*admissionApi.AdmissionResponse, err) {
+	if len(patches) != 0 {
+		patchBytes, err := json.Marshal(patches)
+		if err != nil {
+			return nil, err
+		}
+
+		return &admissionApi.AdmissionResponse{
+			Allowed: true,
+			Patch: patchBytes,
+			PatchType: &jsonPatch,
+		}
+	} else {
+		// nothing to patch
+		return &okResponse
+	}
 }

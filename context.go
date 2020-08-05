@@ -14,13 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// WebhookGlobalContext global context of webhooks
-// this context will be used to share global configuration and objects between webhooks and server
-type WebhookGlobalContext struct {
-	config    *restclient.Config
-	clientset *kubernetes.Clientset
-}
-
 var kubeconfig string
 var masterURL string
 var config *restclient.Config
