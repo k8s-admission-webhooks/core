@@ -23,9 +23,9 @@ const (
 )
 
 var (
-	jsonPatch = admissionApi.PatchTypeJSONPatch
-	okResponse = admissionApi.AdmissionResponse {
-		Allowed: true
+	jsonPatch  = admissionApi.PatchTypeJSONPatch
+	okResponse = admissionApi.AdmissionResponse{
+		Allowed: true,
 	}
 
 	// IgnoredNamespaces list of namespaces that should ignored by admission review process
@@ -111,8 +111,8 @@ func CreatePatchResponse(patches []PatchOperation) (*admissionApi.AdmissionRespo
 		}
 
 		return &admissionApi.AdmissionResponse{
-			Allowed: true,
-			Patch: patchBytes,
+			Allowed:   true,
+			Patch:     patchBytes,
 			PatchType: &jsonPatch,
 		}
 	} else {
