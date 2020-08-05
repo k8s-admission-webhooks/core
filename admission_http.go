@@ -8,6 +8,8 @@ import (
 
 	log "github.com/golang/glog"
 	admissionApi "k8s.io/api/admission/v1"
+	admissionRegistration "k8s.io/api/admissionregistration/v1"
+	k8sCore "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -19,7 +21,9 @@ var (
 	runtimeScheme = runtime.NewScheme()
 	codecs        = serializer.NewCodecFactory(runtimeScheme)
 	deserializer  = codecs.UniversalDeserializer()
-	//defaulter = runtime.ObjectDefaulter(runtimeScheme)
+
+	// (https://github.com/kubernetes/kubernetes/issues/57982)
+	defaulter = runtime.ObjectDefaulter(runtimeScheme)
 )
 
 // ReadAdmissionReview read an AdmissionReview from a request
@@ -84,4 +88,10 @@ func WriteAdmissionResponse(
 	} else if log.V(10) {
 		log.Infof("Sent response: %v", string(resp))
 	}
+}
+
+func init() {
+	_ = admissionApi.AddToScheme(runtimeScheme)
+	_ = admissionRegistration.AddToScheme(runtimeScheme)
+	_ = k8sCore.AddToScheme(runtimeScheme)
 }
