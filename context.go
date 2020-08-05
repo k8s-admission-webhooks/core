@@ -60,3 +60,8 @@ func GetClientset() *kubernetes.Clientset { return clientset }
 func GetNamespace(name string, options metav1.GetOptions) (*corev1.Namespace, error) {
 	return clientset.CoreV1().Namespaces().Get(context.TODO(), name, options)
 }
+
+// GetPod get information about a POD
+func GetPod(ns string, name string, options metav1.GetOptions) (*corev1.Pod, error) {
+	return clientset.CoreV1().Pods(ns).Get(context.TODO(), name, options)
+}
