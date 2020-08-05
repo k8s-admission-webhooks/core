@@ -103,7 +103,7 @@ func UpdateLabels(current map[string]string, added map[string]string) []PatchOpe
 }
 
 // CreatePatchResponse create a patch response for an admission review request
-func CreatePatchResponse(patches []PatchOperation) (*admissionApi.AdmissionResponse, err) {
+func CreatePatchResponse(patches []PatchOperation) (*admissionApi.AdmissionResponse, error) {
 	if len(patches) != 0 {
 		patchBytes, err := json.Marshal(patches)
 		if err != nil {
@@ -114,9 +114,9 @@ func CreatePatchResponse(patches []PatchOperation) (*admissionApi.AdmissionRespo
 			Allowed:   true,
 			Patch:     patchBytes,
 			PatchType: &jsonPatch,
-		}
+		}, nil
 	} else {
 		// nothing to patch
-		return &okResponse
+		return &okResponse, nil
 	}
 }
