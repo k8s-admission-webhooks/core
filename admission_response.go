@@ -47,6 +47,7 @@ type PatchOperation struct {
 	Value interface{} `json:"value,omitempty"`
 }
 
+// KeyValue create a map[string]string with a single entry
 func KeyValue(key string, value string) map[string]string {
 	return map[string]string{
 		key: value,
