@@ -32,9 +32,11 @@ var (
 func ReadAdmissionReview(request *http.Request) (*admissionApi.AdmissionReview, error) {
 	var body []byte
 	if request.Body != nil {
-		if data, err := ioutil.ReadAll(request.Body); err != nil {
-			body = data
+		data, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			return nil, err
 		}
+		body = data
 	}
 
 	if log.V(8) {
