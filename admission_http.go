@@ -37,6 +37,11 @@ func ReadAdmissionReview(request *http.Request) (*admissionApi.AdmissionReview, 
 		}
 	}
 
+	if log.V(8) {
+		bodyString := string(body)
+		log.Infof("Request body: %v", bodyString)
+	}
+
 	if len(body) == 0 {
 		return nil, fmt.Errorf("Empty body")
 	}
@@ -44,11 +49,6 @@ func ReadAdmissionReview(request *http.Request) (*admissionApi.AdmissionReview, 
 	contentType := request.Header.Get("Content-Type")
 	if contentType != jsonMIME {
 		return nil, fmt.Errorf("Invalid content-type. Received: %v, Expected: %v", jsonMIME, contentType)
-	}
-
-	if log.V(8) {
-		bodyString := string(body)
-		log.Infof("Request body: %v", bodyString)
 	}
 
 	ar := admissionApi.AdmissionReview{}
