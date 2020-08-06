@@ -221,9 +221,9 @@ func WriteAdmissionResponse(
 	var resp []byte
 	if apiVersion == verAdmissionApiBeta1 {
 		arBeta1 := v1tobeta1AdmissionReview(&responseAR)
-		resp, err := json.Marshal(&arBeta1)
+		resp, err = json.Marshal(&arBeta1)
 	} else {
-		resp, err := json.Marshal(responseAR)
+		resp, err = json.Marshal(responseAR)
 	}
 
 	if err != nil {
