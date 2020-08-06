@@ -33,13 +33,13 @@ type Webhook interface {
 
 // GetWebhookAction extract web action from the path
 func GetWebhookAction(path string, webhookPath string) (string, bool) {
-	if strings.HasPrefix(path, webhookPath) {
-		if len(path) == len(webhookPath) {
+	if strings.HasPrefix(path, "/"+webhookPath) {
+		if len(path) == (1 + len(webhookPath)) {
 			return "", true
 		}
 
-		if path[len(webhookPath)] == '/' {
-			return path[len(webhookPath)+1:], true
+		if path[len(webhookPath)+1] == '/' {
+			return path[len(webhookPath)+2:], true
 		}
 	}
 
