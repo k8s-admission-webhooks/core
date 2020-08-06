@@ -149,7 +149,7 @@ func ReadAdmissionReview(request *http.Request) (string, *admissionApi.Admission
 	if request.Body != nil {
 		data, err := ioutil.ReadAll(request.Body)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		body = data
 	}
